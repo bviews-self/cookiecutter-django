@@ -53,17 +53,17 @@ jobs:
           node-version: "22.23.4"
       - name: Generate project
         run: cookiecutter . --no-input --output-dir .cache/frontend frontend_pipeline=${{ matrix.pipeline }} use_docker=y
-      - name: Build frontend
-        working-directory: .cache/frontend/my_awesome_project
-        run: |
-          npm install
-          npm run build
       - name: Build local Node image
         working-directory: .cache/frontend/my_awesome_project
         run: docker build -f compose/local/node/Dockerfile .
       - name: Build production frontend stage
         working-directory: .cache/frontend/my_awesome_project
         run: docker build --target client-builder -f compose/production/django/Dockerfile .
+      - name: Build frontend
+        working-directory: .cache/frontend/my_awesome_project
+        run: |
+          npm install
+          npm run build
 
   docker:
     strategy:
