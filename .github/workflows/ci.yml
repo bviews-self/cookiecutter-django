@@ -56,9 +56,9 @@ jobs:
       - name: Build local Node image
         working-directory: .cache/frontend/my_awesome_project
         run: docker build -f compose/local/node/Dockerfile .
-      - name: Build production frontend stage
+      - name: Build production image
         working-directory: .cache/frontend/my_awesome_project
-        run: docker build --target client-builder -f compose/production/django/Dockerfile .
+        run: docker build -f compose/production/django/Dockerfile .
       - name: Build frontend
         working-directory: .cache/frontend/my_awesome_project
         run: |
