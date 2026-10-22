@@ -1,6 +1,8 @@
 cookiecutter==2.1.1
 sh==2.0.4; sys_platform != "win32"
 binaryornot==0.4.4
+# binaryornot relies on the chardet 5 detection API.
+chardet==5.2.0
 
 # Code quality
 # ------------------------------------------------------------------------------

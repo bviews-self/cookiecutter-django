@@ -32,6 +32,39 @@ jobs:
       - name: Run tests
         run: pytest -n auto tests
 
+  frontend:
+    strategy:
+      fail-fast: false
+      matrix:
+        pipeline: [Gulp, Webpack]
+
+    name: "Frontend ${{ matrix.pipeline }}"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "22.23.4"
+      - name: Generate project
+        run: cookiecutter . --no-input --output-dir .cache/frontend frontend_pipeline=${{ matrix.pipeline }} use_docker=y
+      - name: Build local Node image
+        working-directory: .cache/frontend/my_awesome_project
+        run: docker build -f compose/local/node/Dockerfile .
+      - name: Build production image
+        working-directory: .cache/frontend/my_awesome_project
+        run: docker build -f compose/production/django/Dockerfile .
+      - name: Build frontend
+        working-directory: .cache/frontend/my_awesome_project
+        run: |
+          npm install
+          npm run build
+
   docker:
     strategy:
       fail-fast: false
@@ -110,6 +143,6 @@ jobs:
         run: pip install -r requirements.txt
       - uses: actions/setup-node@v3
         with:
-          node-version: "18"
+          node-version: "22.23.4"
       - name: Bare Metal ${{ matrix.script.name }}
         run: sh tests/test_bare.sh ${{ matrix.script.args }}
